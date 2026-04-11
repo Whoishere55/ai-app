@@ -2,15 +2,17 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getOpenAIClient } from '@/lib/openai'
 
-export async function GET(_: Request, { params }: { params: { id: string } }) {
+export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const messages = await prisma.message.findMany({
-    where: { threadId: params.id },
+    where: { threadId: id },
     orderBy: { createdAt: 'asc' },
   })
   return NextResponse.json(messages)
 }
 
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const { content } = await req.json()
   if (!content?.trim()) {
     return NextResponse.json({ error: 'Content is required' }, { status: 400 })
@@ -18,12 +20,12 @@ export async function POST(req: Request, { params }: { params: { id: string } })
 
   // Save user message
   await prisma.message.create({
-    data: { threadId: params.id, role: 'user', content },
+    data: { threadId: id, role: 'user', content },
   })
 
   // Get all messages for context
   const allMessages = await prisma.message.findMany({
-    where: { threadId: params.id },
+    where: { threadId: id },
     orderBy: { createdAt: 'asc' },
   })
 
@@ -38,12 +40,12 @@ export async function POST(req: Request, { params }: { params: { id: string } })
 
   // Save assistant message
   const assistantMessage = await prisma.message.create({
-    data: { threadId: params.id, role: 'assistant', content: assistantContent },
+    data: { threadId: id, role: 'assistant', content: assistantContent },
   })
 
   // Update thread updatedAt
   await prisma.thread.update({
-    where: { id: params.id },
+    where: { id },
     data: { updatedAt: new Date() },
   })
 

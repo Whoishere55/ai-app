@@ -3,19 +3,20 @@ import { prisma } from '@/lib/prisma'
 import '@/lib/tools/index'
 import { toolRegistry } from '@/lib/tools/registry'
 
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const { toolName } = await req.json()
   if (!toolName) {
     return NextResponse.json({ error: 'toolName is required' }, { status: 400 })
   }
 
   const messages = await prisma.message.findMany({
-    where: { threadId: params.id },
+    where: { threadId: id },
     orderBy: { createdAt: 'asc' },
   })
 
   const result = await toolRegistry.run(toolName, {
-    threadId: params.id,
+    threadId: id,
     messages: messages.map((m) => ({ role: m.role, content: m.content })),
   })
 
