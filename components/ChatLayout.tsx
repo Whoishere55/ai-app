@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import ThreadList from './ThreadList'
 import ChatPanel from './ChatPanel'
 
@@ -17,22 +17,20 @@ export default function ChatLayout() {
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const fetchThreads = async () => {
+  const fetchThreads = useCallback(async () => {
     try {
       const res = await fetch('/api/threads')
       const data = await res.json()
       setThreads(data)
-      if (data.length > 0 && !selectedThreadId) {
-        setSelectedThreadId(data[0].id)
-      }
+      setSelectedThreadId((prev) => (data.length > 0 && !prev ? data[0].id : prev))
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     fetchThreads()
-  }, [])
+  }, [fetchThreads])
 
   const createThread = async () => {
     const res = await fetch('/api/threads', {

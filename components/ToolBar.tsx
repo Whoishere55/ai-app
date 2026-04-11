@@ -20,7 +20,7 @@ export default function ToolBar({ threadId, onResult }: Props) {
     fetch(`/api/threads/${threadId}/tools`)
       .then((r) => r.json())
       .then(setTools)
-  }, [])
+  }, [threadId])
 
   const runTool = async (toolName: string) => {
     setRunning(toolName)

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import ToolBar from './ToolBar'
 
 interface Message {
@@ -22,16 +22,16 @@ export default function ChatPanel({ threadId, onMessageSent }: Props) {
   const [toolResult, setToolResult] = useState<{ toolName: string; result: string } | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     const res = await fetch(`/api/threads/${threadId}/messages`)
     const data = await res.json()
     setMessages(data)
-  }
+  }, [threadId])
 
   useEffect(() => {
     setToolResult(null)
     fetchMessages()
-  }, [threadId])
+  }, [threadId, fetchMessages])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
