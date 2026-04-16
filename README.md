@@ -1,6 +1,57 @@
 # AI Chat App
 
-A full-stack AI chat web application built with Next.js 14 (App Router), TypeScript, Tailwind CSS, Prisma, and OpenAI. Supports multi-thread conversations, a plugin/tool system, and ChatGPT conversation import.
+A full-stack AI chat web application built with Next.js 15 (App Router), TypeScript, Tailwind CSS, Prisma, and OpenAI. Supports multi-thread conversations, a plugin/tool system, and ChatGPT conversation import.
+
+---
+
+## 🚀 Quick Start — Run Locally in 5 Steps
+
+> **You need:** [Node.js 18+](https://nodejs.org), [Docker Desktop](https://www.docker.com/products/docker-desktop/), and an [OpenAI API key](https://platform.openai.com/api-keys).
+
+```bash
+# Step 1 — Clone the repo and install packages
+git clone https://github.com/Whoishere55/ai-app.git
+cd ai-app
+npm install
+
+# Step 2 — Create your environment file
+cp .env.example .env
+# Then open .env and set:
+#   DATABASE_URL="postgresql://aiapp:aiapp@localhost:5432/aiapp"
+#   OPENAI_API_KEY="sk-your-key-here"
+
+# Step 3 — Start the Postgres database (Docker required)
+docker-compose up -d
+
+# Step 4 — Create the database tables
+npx prisma migrate dev --name init
+
+# Step 5 — Start the app
+npm run dev
+```
+
+Open **http://localhost:3000** in your browser. 🎉
+
+---
+
+## 🌐 Deploy to Vercel (live on the internet — free)
+
+1. Push this repo to your GitHub account
+2. Go to [vercel.com/new](https://vercel.com/new) → **Import Git Repository** → select this repo
+3. Add these **Environment Variables** in the Vercel dashboard:
+   | Variable | Value |
+   |----------|-------|
+   | `DATABASE_URL` | Get a free Postgres URL from [neon.tech](https://neon.tech) or [supabase.com](https://supabase.com) |
+   | `OPENAI_API_KEY` | Your OpenAI API key (`sk-...`) |
+   | `OPENAI_BASE_URL` | *(optional)* defaults to `https://api.openai.com/v1` |
+   | `OPENAI_MODEL` | *(optional)* defaults to `gpt-4o-mini` |
+4. Click **Deploy** — the build runs `prisma generate && next build` automatically
+5. After the first deploy, run the migration once from your terminal:
+   ```bash
+   DATABASE_URL="<your-neon-or-supabase-url>" npx prisma migrate deploy
+   ```
+
+Your app is live at `https://your-project.vercel.app` ✅
 
 ---
 
@@ -19,7 +70,7 @@ A full-stack AI chat web application built with Next.js 14 (App Router), TypeScr
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | Next.js 14 (App Router) |
+| Framework | Next.js 15 (App Router) |
 | Language | TypeScript |
 | Styling | Tailwind CSS |
 | Database | PostgreSQL via Prisma ORM |
